@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { CompleteLogo } from '../assets/img/index'
+import React, { useState } from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { CompleteLogo } from '../assets/img/index';
 import { FaCrown } from "react-icons/fa";
 import { useStateValue } from "../Context/StateProvider";
 import { getAuth } from "firebase/auth";
@@ -8,11 +8,11 @@ import { app } from "../config/firebase.config";
 import { motion } from "framer-motion";
 import { checkoutPayment } from '../api';
 
-
 const Header = () => {
     const [{ user }, dispatch] = useStateValue();
     const [isMenu, setIsMenu] = useState(false);
-    const navigate = useNavigate;
+    const [showSubscriptionOptions, setShowSubscriptionOptions] = useState(false);
+    const navigate = useNavigate();
 
     const checkoutHandler = async (amount) => {
         checkoutPayment(amount).then((data) => {
@@ -36,9 +36,8 @@ const Header = () => {
             };
             const razor = new window.Razorpay(options);
             razor.open();
-        })
-
-    }
+        });
+    };
 
     const logout = () => {
         const firebaseAuth = getAuth(app);
@@ -60,18 +59,40 @@ const Header = () => {
             </div>
 
             {!user?.user.isPremium && (
-                // <NavLink to={"/checkout"}>
-                <button onClick={() => checkoutHandler(200)} className="text-yellow-800 text-2xl hover:text-yellow-500 font-semibold">
-                    Buy Premium
-                </button>
-                // </NavLink>
+                <div className="relative">
+                    <button onClick={() => setShowSubscriptionOptions(!showSubscriptionOptions)} className="text-yellow-800 text-2xl hover:text-yellow-500 font-semibold">
+                        Buy Premium
+                    </button>
+                    {showSubscriptionOptions && (
+                        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+                            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full">
+                                <div className="flex justify-between items-center mb-4">
+                                    <p className="text-lg font-semibold">Select Subscription Duration</p>
+                                    <button className="text-gray-500 hover:text-gray-800" onClick={() => setShowSubscriptionOptions(false)}>
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <ul className="space-y-4">
+                                    <li>
+                                        <button className="w-full bg-gray-100 hover:bg-gray-200 py-2 px-4 rounded-lg" onClick={() => checkoutHandler(200)}>1 Month - ₹200</button>
+                                    </li>
+                                    <li>
+                                        <button className="w-full bg-gray-100 hover:bg-gray-200 py-2 px-4 rounded-lg" onClick={() => checkoutHandler(600)}>3 Months - ₹600</button>
+                                    </li>
+                                    <li>
+                                        <button className="w-full bg-gray-100 hover:bg-gray-200 py-2 px-4 rounded-lg" onClick={() => checkoutHandler(1200)}>6 Months - ₹1200</button>
+                                    </li>
+                                    <li>
+                                        <button className="w-full bg-gray-100 hover:bg-gray-200 py-2 px-4 rounded-lg" onClick={() => checkoutHandler(2400)}>12 Months - ₹2400</button>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    )}
+                </div>
             )}
-
-            {/* <div className="flex justify-center items-center ml-7">
-                <NavLink to="/home">
-                    <img src={TextLogo} alt="Logo" className='h-12' />
-                </NavLink>
-            </div> */}
 
             <div className="flex items-center cursor-pointer gap-2 relative"
                 onMouseEnter={() => setIsMenu(true)}
@@ -131,7 +152,7 @@ const Header = () => {
             </div>
 
         </header>
-    )
-}
+    );
+};
 
-export default Header
+export default Header;

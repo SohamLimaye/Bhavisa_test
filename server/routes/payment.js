@@ -8,7 +8,7 @@ const instance = new Razorpay({
 });
 
 const router = require("express").Router();
-
+    const clientURL = process.env.CLIENT_URL;
 router.post('/checkout', async (req, res) => {
     if (!req.body.amount) {
         return res.status(500).send({ message: "Invalid Amount" });
